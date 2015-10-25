@@ -2,6 +2,8 @@ package main
 
 import (
 	"FinalProject/controller/routes"
+	"FinalProject/globals"
+	"FinalProject/utility"
 	"log"
 	"net/http"
 
@@ -9,8 +11,13 @@ import (
 )
 
 func main() {
+	globals.DB = utility.LoadDatabase()
 	r := mux.NewRouter()
-	r.HandleFunc("/", routes.Test())
+	r.HandleFunc("/", routes.GetBill())
+	r.HandleFunc("/congress", routes.GetCongress())
+	r.HandleFunc("/Nancy", routes.GetCongressPerson())
+	r.HandleFunc("/bp", routes.GetContributor())
+	r.HandleFunc("/bill", routes.GetBill())
 	http.Handle("/", r)
 	log.Fatal(http.ListenAndServe(":8080", r))
 }

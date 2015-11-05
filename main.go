@@ -19,5 +19,6 @@ func main() {
 	r.HandleFunc("/bp", routes.GetContributor())
 	r.HandleFunc("/bill", routes.GetBill())
 	http.Handle("/", r)
+	log.Printf("so far so good")
 	log.Fatal(http.ListenAndServe(":8080", r))
 }

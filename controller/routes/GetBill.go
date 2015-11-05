@@ -13,7 +13,7 @@ func GetBill() func(w http.ResponseWriter, r *http.Request) {
 		// var out interface{}
 		db := globals.DB
 
-		rows, err := db.Query("SELECT cm.name, vote FROM voted v, congressmember cm WHERE bill_id = 1003")
+		rows, err := db.Query("SELECT cm.name, vote FROM voted v, congressmembers cm WHERE bill_id = 1003")
 		if err != nil {
 			log.Fatal(err)
 		}

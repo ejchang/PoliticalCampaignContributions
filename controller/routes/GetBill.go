@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"FinalProject/globals"
+	"finalproject/globals"
 	"log"
 	"net/http"
 )

@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"FinalProject/globals"
 	"encoding/json"
+	"finalproject/globals"
 	"log"
 	"net/http"
 )
@@ -17,6 +17,7 @@ func GetCongress() func(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Fatal(err)
 		}
+
 		var name, chamber, party, state, congressID string
 
 		for rows.Next() {

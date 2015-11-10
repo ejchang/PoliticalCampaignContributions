@@ -2,10 +2,12 @@
 *.o
 *.a
 *.so
+.DS_STORE
 
 # Folders
 _obj
 _test
+config
 
 # Architecture specific extensions/prefixes
 *.[568vq]

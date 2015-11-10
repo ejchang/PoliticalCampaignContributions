@@ -1,8 +1,9 @@
 package routes
 
 import (
-	"FinalProject/globals"
 	"encoding/json"
+	"finalproject/globals"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -18,7 +19,7 @@ func GetCongressPerson() func(w http.ResponseWriter, r *http.Request) {
 		memberID := vars["memberID"]
 		db := globals.DB
 		// get bills congress person has voted on
-		query := "SELECT DISTINCT b.bill_id, v.vote, b.description FROM CongressMembers cg, Bill b, Voted v, Donors d WHERE v.congress_id = cg.congress_id AND v.bill_id = b.bill_id and v.congress_id = cg.congress_id and cg.congress_id = " + memberID
+		query := fmt.Sprintf("SELECT DISTINCT b.bill_id, v.vote, b.description FROM CongressMembers cg, Bill b, Voted v, Donors d WHERE v.congress_id = cg.congress_id AND v.bill_id = b.bill_id and v.congress_id = cg.congress_id and cg.congress_id = '%s'", memberID)
 		rows, err := db.Query(query)
 
 		if err != nil {
@@ -43,8 +44,8 @@ func GetCongressPerson() func(w http.ResponseWriter, r *http.Request) {
 		out["bills"] = bills
 
 		// get donors and how much they donated to this member
-		query = "SELECT d.name, pd.amount, d.id FROM CongressMembers cg, Donors d, PAC_Donations pd, Support s WHERE s.pac = pd.pac_id AND cg.congress_id = s.supported AND pd.donor_id = d.id AND cg.congress_id = " + memberID + " ORDER BY pd.amount DESC LIMIT 10;"
-		rows, err = db.Query("SELECT d.name, pd.amount, d.id FROM CongressMembers cg, Donors d, PAC_Donations pd, Support s WHERE s.pac = pd.pac_id AND cg.congress_id = s.supported AND pd.donor_id = d.id ORDER BY pd.amount DESC LIMIT 10;")
+		query = fmt.Sprintf("SELECT d.name, don.amount, d.id FROM CongressMembers cg, Donors d, Donations don WHERE cg.congress_id = '%s' and don.member_id = cg.congress_id and don.donor_id = d.id", memberID)
+		rows, err = db.Query(query)
 
 		if err != nil {
 			log.Panic(err)

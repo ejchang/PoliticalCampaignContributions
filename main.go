@@ -1,9 +1,9 @@
 package main
 
 import (
-	"FinalProject/controller/routes"
-	"FinalProject/globals"
-	"FinalProject/utility"
+	"finalproject/controller/routes"
+	"finalproject/globals"
+	"finalproject/utility"
 	"log"
 	"net/http"
 
@@ -11,6 +11,7 @@ import (
 )
 
 func main() {
+	utility.LoadConfig()
 	globals.DB = utility.LoadDatabase()
 	r := mux.NewRouter()
 	r.HandleFunc("/", routes.GetBill())

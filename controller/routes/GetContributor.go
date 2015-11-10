@@ -1,8 +1,9 @@
 package routes
 
 import (
-	"FinalProject/globals"
 	"encoding/json"
+	"finalproject/globals"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -17,7 +18,7 @@ func GetContributor() func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		contributor := vars["contributor"]
 		db := globals.DB
-		query := "SELECT DISTINCT bill_id, description, name FROM donors d, bill b WHERE d.industry = b.industry and d.id=" + contributor
+		query := fmt.Sprintf("SELECT DISTINCT bill_id, description, name FROM donors d, bill b WHERE lower(d.industry) = lower(b.industry) and d.id='%s'", contributor)
 		rows, err := db.Query(query)
 		if err != nil {
 			log.Fatal(err)

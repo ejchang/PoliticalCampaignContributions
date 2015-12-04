@@ -19,6 +19,8 @@ func main() {
 	r.HandleFunc("/member/{memberID}", routes.GetCongressPerson())
 	r.HandleFunc("/contributor/{contributor}", routes.GetContributor())
 	r.HandleFunc("/bill", routes.GetBill())
+	r.HandleFunc("/member/{memberID}/{industry}", routes.GetIndustryPacs())
+
 	http.Handle("/", r)
 	log.Printf("so far so good")
 	log.Fatal(http.ListenAndServe(":8080", r))

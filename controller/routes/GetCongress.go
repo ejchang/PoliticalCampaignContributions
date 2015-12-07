@@ -18,10 +18,10 @@ func GetCongress() func(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err)
 		}
 
-		var name, chamber, party, state, congressID string
+		var name, chamber, congressID string
 
 		for rows.Next() {
-			err := rows.Scan(&name, &chamber, &party, &state, &congressID)
+			err := rows.Scan(&name, &chamber, &congressID)
 			if err != nil {
 				log.Fatal(err)
 			}

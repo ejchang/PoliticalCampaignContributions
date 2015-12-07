@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -77,19 +76,22 @@ func GetCongressPerson() func(w http.ResponseWriter, r *http.Request) {
 			}
 			temp := make(map[string]interface{})
 			temp["industry"] = industry
-			temp["amount"] = strconv.Itoa(amount)
-			subquery := fmt.Sprintf("SELECT DISTINCT p.name, pd.amount FROM PAC p, PAC_Donations pd WHERE p.industry = '%s' AND pd.congress_id = '%s' AND pd.pac_id = p.pacID", industry, memberID)
+			temp["amount"] = amount
+			subquery := fmt.Sprintf("SELECT p.name, pd.amount FROM PAC p, PAC_Donations pd WHERE p.industry = '%s' AND pd.congress_id = '%s' AND pd.pac_id = p.pacID", industry, memberID)
 			pacrows, err := db.Query(subquery)
 			if err != nil {
 				log.Panic(err)
 			}
-			paclist := make(map[string]string)
+			paclist := make(map[string]int)
 			for pacrows.Next() {
 				err = pacrows.Scan(&name, &amount)
 				if err != nil {
 					log.Fatal(err)
 				}
-				paclist[name] = strconv.Itoa(amount)
+				if _, ok := paclist[name]; !ok {
+					paclist[name] = 0
+				}
+				paclist[name] = paclist[name] + amount
 			}
 			temp["pacs"] = paclist
 			donors = append(donors, temp)

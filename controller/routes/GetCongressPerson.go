@@ -3,7 +3,6 @@ package routes
 import (
 	"encoding/json"
 	"finalproject/globals"
-	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -20,26 +19,25 @@ func GetCongressPerson() func(w http.ResponseWriter, r *http.Request) {
 		out := map[string]interface{}{}
 
 		db := globals.DB
-		query := fmt.Sprintf("SELECT name, party, state FROM congressmembers WHERE congress_id = '%s'", memberID)
-		rows, err := db.Query(query)
+		rows, err := db.Query("SELECT name, party, state, chamber FROM congressmembers WHERE congress_id = $1", memberID)
 		if err != nil {
 			log.Panic(err)
 		}
-		var repname, party, state string
+		var repname, party, state, chamber string
 		for rows.Next() {
-			err = rows.Scan(&repname, &party, &state)
+			err = rows.Scan(&repname, &party, &state, &chamber)
 			if err != nil {
 				log.Fatal(err)
 			}
 			out["name"] = repname
 			out["party"] = party
 			out["state"] = state
+			out["chamber"] = chamber
 		}
 
 		lastName := strings.Split(repname, " ")
 		// get bills congress person has voted on
-		query = fmt.Sprintf("SELECT DISTINCT b.bill_id, b.name, v.vote, b.description FROM Bill b, Voted v WHERE v.state = '%s' AND v.name = '%s' AND v.bill_id = b.bill_id", state, lastName[1])
-		rows, err = db.Query(query)
+		rows, err = db.Query("SELECT DISTINCT b.bill_id, b.name, v.vote, b.description FROM Bill b, Voted v WHERE v.state = $1 AND v.name = $2 AND v.bill_id = b.bill_id", state, lastName[1])
 
 		if err != nil {
 			log.Panic(err)
@@ -63,8 +61,7 @@ func GetCongressPerson() func(w http.ResponseWriter, r *http.Request) {
 		out["bills"] = bills
 
 		// get top industries and how much they donated to this member
-		query = fmt.Sprintf("SELECT pd.industry, sum(pd.amount) FROM CongressMembers cg, Pac_Donations pd WHERE cg.congress_id = '%s' and pd.congress_id = cg.congress_id GROUP BY cg.congress_id, pd.industry ORDER BY sum(pd.amount) DESC LIMIT 20", memberID)
-		rows, err = db.Query(query)
+		rows, err = db.Query("SELECT pd.industry, sum(pd.amount) FROM CongressMembers cg, Pac_Donations pd WHERE cg.congress_id = $1 and pd.congress_id = cg.congress_id GROUP BY cg.congress_id, pd.industry ORDER BY sum(pd.amount) DESC LIMIT 20", memberID)
 
 		if err != nil {
 			log.Panic(err)
@@ -81,8 +78,7 @@ func GetCongressPerson() func(w http.ResponseWriter, r *http.Request) {
 			temp := make(map[string]interface{})
 			temp["industry"] = industry
 			temp["amount"] = amount
-			subquery := fmt.Sprintf("SELECT p.name, pd.amount FROM PAC p, PAC_Donations pd WHERE p.industry = '%s' AND pd.congress_id = '%s' AND pd.pac_id = p.pacID", industry, memberID)
-			pacrows, err := db.Query(subquery)
+			pacrows, err := db.Query("SELECT p.name, pd.amount FROM PAC p, PAC_Donations pd WHERE p.industry = $1 AND pd.congress_id = $2 AND pd.pac_id = p.pacID", industry, memberID)
 			if err != nil {
 				log.Panic(err)
 			}

@@ -3,7 +3,6 @@ package routes
 import (
 	"encoding/json"
 	"finalproject/globals"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -22,8 +21,7 @@ func GetBill() func(w http.ResponseWriter, r *http.Request) {
 		db := globals.DB
 
 		var billid, billname, description, voteDate string
-		query := fmt.Sprintf("SELECT * FROM Bill WHERE bill_id = '%s'", billID)
-		rows, err := db.Query(query)
+		rows, err := db.Query("SELECT * FROM BILL WHERE bill_id= $1", billID)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -38,8 +36,7 @@ func GetBill() func(w http.ResponseWriter, r *http.Request) {
 			out["voteDate"] = voteDate
 		}
 
-		query = fmt.Sprintf("SELECT cm.name, vote, cm.state, cm.party, cm.congress_id FROM voted v, congressmembers cm WHERE bill_id = '%s' AND cm.state = v.state", billID)
-		rows, err = db.Query(query + " AND cm.name LIKE '%' || v.name || '%'")
+		rows, err = db.Query("SELECT cm.name, vote, cm.state, cm.party, cm.congress_id FROM voted v, congressmembers cm WHERE bill_id = $1 AND cm.state = v.state AND cm.name LIKE '%' || v.name || '%'", billID)
 		if err != nil {
 			log.Fatal(err)
 		}

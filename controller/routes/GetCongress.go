@@ -13,21 +13,23 @@ func GetCongress() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		db := globals.DB
 		out := []interface{}{}
-		rows, err := db.Query("SELECT name, chamber, congress_id FROM congressmembers")
+		rows, err := db.Query("SELECT name, chamber, party, state, congress_id FROM congressmembers")
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		var name, chamber, congressID string
+		var name, chamber, party, state, congressID string
 
 		for rows.Next() {
-			err := rows.Scan(&name, &chamber, &congressID)
+			err := rows.Scan(&name, &chamber, &party, &state, &congressID)
 			if err != nil {
 				log.Fatal(err)
 			}
 			temp := make(map[string]string)
 			temp["name"] = name
 			temp["chamber"] = chamber
+			temp["party"] = party
+			temp["state"] = state
 			temp["id"] = congressID
 			out = append(out, temp)
 		}

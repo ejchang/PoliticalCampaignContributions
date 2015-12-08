@@ -18,7 +18,7 @@ func main() {
 	r.HandleFunc("/congress", routes.GetCongress())
 	r.HandleFunc("/member/{memberID}", routes.GetCongressPerson())
 	r.HandleFunc("/contributor/{contributor}", routes.GetContributor())
-	r.HandleFunc("/bill", routes.GetBill())
+	r.HandleFunc("/bill/{billID}", routes.GetBill())
 	r.HandleFunc("/member/{memberID}/{industry}", routes.GetIndustryPacs())
 
 	http.Handle("/", r)

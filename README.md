@@ -20,6 +20,43 @@ This server should be connected to a psql server. It is currently configured to 
 }
 ```
 
+### Expected Schema
+If you load in your own database, it should be in the following schema
+```SQL
+CREATE TABLE CongressMembers
+(congress_id VARCHAR(32) NOT NULL PRIMARY KEY,
+ name VARCHAR(64) NOT NULL,
+ chamber VARCHAR(16) NOT NULL,
+ state VARCHAR(16) NOT NULL,
+ party VARCHAR(16) NOT NULL);
+
+CREATE TABLE Bill
+(bill_id VARCHAR(8) NOT NULL PRIMARY KEY,
+name VARCHAR(512) NOT NULL,
+description VARCHAR(512) NOT NULL,
+date_voted VARCHAR(32) NOT NULL);
+
+CREATE TABLE VOTED
+(bill_id VARCHAR(8) NOT NULL REFERENCES Bill(bill_id),
+name VARCHAR(32) NOT NULL,
+state VARCHAR(4) NOT NULL,
+vote VARCHAR(256) NOT NULL
+CHECK(vote in ('Yes', 'No', 'Abstain')));
+
+CREATE TABLE PAC
+(pacID VARCHAR(64) NOT NULL PRIMARY KEY,
+name VARCHAR(64) NOT NULL,
+industry VARCHAR(64) NOT NULL);
+
+CREATE TABLE PAC_Donations
+(pacdonation_id BIGINT NOT NULL PRIMARY KEY,
+pac_id VARCHAR(64) NOT NULL REFERENCES PAC(pacID),
+congress_id VARCHAR(32) NOT NULL REFERENCES CongressMembers(congress_id),
+amount INTEGER NOT NULL,
+industry VARCHAR(64) NOT NULL);
+
+```
+
 ### API
 The backend supports the following API Calls
 
